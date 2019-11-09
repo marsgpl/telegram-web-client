@@ -1,0 +1,29 @@
+{
+  "name": "telegram-web-client",
+  "version": "1.0.0",
+  "scripts": {
+    "mkdirs": "mkdir -p .cache release .cache/replace-classes .cache/html-minifier .cache/uglifycss .cache/google-closure-compiler",
+    "favicon": "cp src/favicon.ico release",
+    "replace-classes": "node tools/replace-classes.js",
+    "minify-html": "npx html-minifier --collapse-boolean-attributes --collapse-inline-tag-whitespace --collapse-whitespace --max-line-length 500 --remove-attribute-quotes --remove-comments --remove-script-type-attributes --remove-style-link-type-attributes --remove-tag-whitespace --output .cache/html-minifier/index.html .cache/replace-classes/index.html",
+    "minify-css": "npx uglifycss --max-line-len 500 .cache/replace-classes/app-shell.css --output .cache/uglifycss/app-shell.css",
+    "compile-js": "npx google-closure-compiler --compilation_level ADVANCED --env BROWSER --js .cache/replace-classes/app-shell.js --js_output_file .cache/google-closure-compiler/app-shell.js --language_in ECMASCRIPT_NEXT --language_out ECMASCRIPT5 --warning_level VERBOSE --formatting SINGLE_QUOTES --property_renaming_report .cache/app-shell.props.json --variable_renaming_report .cache/app-shell.vars.json",
+    "inliner": "node tools/inliner.js",
+    "ready": "echo -e '\nREADY: release/index.html'",
+    "build": "npm run mkdirs && npm run favicon && npm run replace-classes && npm run minify-html && npm run minify-css && npm run compile-js && npm run inliner && npm run ready"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/marsgpl/telegram-web-client.git"
+  },
+  "keywords": [
+    "telegram"
+  ],
+  "author": "marsgpl",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "google-closure-compiler": "^20191027.0.0",
+    "html-minifier": "^4.0.0",
+    "uglifycss": "0.0.29"
+  }
+}
