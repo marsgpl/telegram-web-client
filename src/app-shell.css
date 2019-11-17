@@ -1,5 +1,4 @@
-/* reset default body margin */
-body {
+body, input, button {
     margin: 0;
     font: 16px / 20px Helvetica, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -9,7 +8,6 @@ body {
     margin: 0 auto;
 }
 
-/* cache must be invisible */
 .cache {
     display: none;
 }
@@ -38,8 +36,168 @@ i {
 .page-login__title {
     font-size: 2rem;
     line-height: 2;
+    font-weight: semibold;
 }
 
 .page-login__subtitle {
     color: #707579;
+    margin-bottom: 50px;
+}
+
+.page-login__form {
+    user-select: none;
+}
+
+.page-login__form label {
+    display: block;
+    margin: 0 auto 24px;
+    width: 360px;
+    position: relative;
+}
+
+button {
+    display: block;
+    background: #4EA4F6;
+    color: #fff;
+    text-transform: uppercase;
+    border: none;
+    height: 54px;
+    border-radius: 10px;
+    width: 100%;
+    font-weight: semibold;
+    outline: none;
+}
+
+.page-login__form label .single-line-input {
+    border: 1px solid #DADCE0;
+    border-radius: 10px;
+    line-height: 28px;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    display: block;
+    outline: none;
+    width: 100%;
+}
+
+.page-login__form label .single-line-input-placeholder {
+    display: none;
+    position: absolute;
+    top: -8px;
+    left: 12px;
+    background: #fff;
+    color: #666;
+    padding: 0 4px;
+    font-size: 12px;
+}
+
+.page-login__form label .single-line-input:valid ~ .single-line-input-placeholder {
+    display: block;
+}
+
+.page-login__form label .single-line-input::placeholder {
+    color: #AEB7BE;
+}
+
+.page-login__form label .single-line-input:focus {
+    border: 2px solid #4EA4F6;
+    padding: 11px 13px;
+    caret-color: #4EA4F6;
+}
+
+.page-login__form label .single-line-input:focus ~ .single-line-input-placeholder {
+    color: #3390EC;
+    font-weight: semibold;
+}
+
+.page-login__form .page-login__form__keep-signed {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: flex-end;
+    cursor: pointer;
+    color: #2E2E2E;
+}
+
+.page-login__form__keep-signed input {
+    visibility: hidden;
+    position: absolute;
+}
+
+.page-login__form__keep-signed .icon__checkbox-on {
+    display: none;
+}
+
+.page-login__form__keep-signed .icon__checkbox-on,
+.page-login__form__keep-signed .icon__checkbox-off {
+    margin: 0 32px 0 16px;
+}
+
+.page-login__form__keep-signed input:checked ~ .icon__checkbox-on {
+    display: block;
+}
+
+.page-login__form__keep-signed input:checked ~ .icon__checkbox-off {
+    display: none;
+}
+
+.page-login__form__country .icon__down {
+    cursor: pointer;
+    position: absolute;
+    padding: 15px;
+    top: 0;
+    right: 0;
+}
+
+.page-login__form__country-select {
+    display: none;
+    position: absolute;
+    top: 58px;
+    left: 0;
+    width: 100%;
+    padding: 13px 0;
+    box-sizing: border-box;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 2px rgba(0,0,0,.1), 0 5px 5px 1px rgba(0,0,0,.15);
+    z-index: 1;
+    max-height: 212px;
+    overflow: auto;
+}
+
+.page-login__form__country-select__row {
+    height: 56px;
+    line-height: 56px;
+    display: flex;
+    padding: 0 16px;
+    cursor: pointer;
+}
+
+.page-login__form__country-select__row:hover {
+    background: #F4F4F5;
+}
+
+.page-login__form__country-select__row__title {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.page-login__form__country-select__row__phone-code {
+    color: #707579;
+}
+
+.page-login__form__country-active .icon__down {
+    transform: rotate(180deg);
+}
+
+.page-login__form__country-active .icon__down path {
+    fill: #4EA4F6;
+}
+
+.page-login__form__country-active .page-login__form__country-select {
+    display: block;
+}
+
+.page-login__form .page-login__form__phone-submit {
+    padding-top: 20px;
+    display: none;
 }
