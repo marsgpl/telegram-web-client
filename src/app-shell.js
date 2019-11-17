@@ -1,7 +1,8 @@
 (function(_window, _document, _location) {
     const $ = function(cssSelector) {
-        return $.cache[cssSelector] = $.cache[cssSelector]
-            || _document.querySelector(cssSelector);
+        return (typeof cssSelector === 'object') ? cssSelector
+            : $.cache[cssSelector] = $.cache[cssSelector]
+                || _document.querySelector(cssSelector);
     };
     $.cache = {};
 
@@ -28,32 +29,66 @@
         });
     };
 
-    const show = function(cssSelector) {
-        $(cssSelector).style.display = 'block';
+    const un = function(cssSelector, eventNames, callback) {
+        eventNames.split(' ').forEach(eventName => {
+            $(cssSelector).removeEventListener(eventName, callback);
+        });
+    };
+
+    const show = function(cssSelector, displayValue) {
+        $(cssSelector).style.display = displayValue || 'block';
     };
 
     const hide = function(cssSelector) {
         $(cssSelector).style.display = 'none';
     };
 
+    const normalizeStr = function(str) {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    };
+
     const CONSTRUCTOR = '_';
-    const DESTRUCTOR = '__';
+    const CONSTRUCTOR_ONCE = '__';
+    const CONSTRUCTOR_ONCE_CALLED = '___';
+    const DESTRUCTOR = '____';
 
-    const CSS_CLASS__CACHE = '.cache';
+    const CLASS__CACHE = '.cache';
+    const CLASS__PAGE_PHONE = '.page-phone';
+    const CLASS__PAGE_CODE = '.page-code';
+    const CLASS__PAGE_HOME = '.page-home';
+    const CLASS__SINGLE_LINE_INPUT = '.single-line-input';
+    const CLASS__SINGLE_LINE_INPUT_PLACEHOLDER = '.single-line-input-placeholder';
+    const CLASS__BUTTON_BUSY = '.button-busy';
+    const CLASS__ICON__TELEGRAM_LOGO = '.icon__telegram-logo';
+    const CLASS__ICON__CHECKBOX_ON = '.icon__checkbox-on';
+    const CLASS__ICON__CHECKBOX_OFF = '.icon__checkbox-off';
+    const CLASS__ICON__DOWN = '.icon__down';
 
-    const CSS_CLASS__PAGE_LOGIN = '.page-login';
-    const CSS_CLASS__PAGE_HOME = '.page-home';
+    const ROUTE_PHONE = 'phone';
+    const ROUTE_CODE = 'code';
+    const ROUTE_HOME = 'home';
 
-    const CSS_CLASS__SINGLE_LINE_INPUT = '.single-line-input';
-    const CSS_CLASS__SINGLE_LINE_INPUT_PLACEHOLDER = '.single-line-input-placeholder';
+    const ROUTE_TO_PAGE_CLASS = {
+        [ROUTE_PHONE]: CLASS__PAGE_PHONE,
+        [ROUTE_CODE]: CLASS__PAGE_CODE,
+        [ROUTE_HOME]: CLASS__PAGE_HOME,
+    };
 
-    const CSS_CLASS__ICON__TELEGRAM_LOGO = '.icon__telegram-logo';
-    const CSS_CLASS__ICON__CHECKBOX_ON = '.icon__checkbox-on';
-    const CSS_CLASS__ICON__CHECKBOX_OFF = '.icon__checkbox-off';
-    const CSS_CLASS__ICON__DOWN = '.icon__down';
+    const KEY_CODE_ENTER = 13;
+    const CONTROL_KEY_CODES = [
+        8, // backspace
+        KEY_CODE_ENTER,
+        46, // delete
+        35, // win end
+        36, // win home
+        37, // left arrow
+        38, // up arrow
+        39, // right arrow
+        40, // down arrow
+    ];
 
     const VALUES = {
-        PAGE_LOGIN: {
+        PAGE_PHONE: {
             TITLE: {
                 DEFAULT: 'Sign in to Telegram',
                 ENTER_NAME: 'Your Name',
@@ -338,10 +373,8 @@
     const user = (function() {
         const user = {};
 
-        const LOCATION_HASH__HOME = '#h';
-
         user.isGuest = function() {
-            return _location.hash.indexOf(LOCATION_HASH__HOME) < 0;
+            return true;
         };
 
         return user;
@@ -352,164 +385,255 @@
             pages: {},
         };
 
-        const CSS_CLASS__CURRENT_PAGE_CONTAINER = '.current-page-container';
+        const CLASS__CURRENT_PAGE_CONTAINER = '.current-page-container';
 
-        router.goto = function(pageId) {
+        router.onHash = function() {
+            const route = _location.hash.substr(1);
+            const pageId = ROUTE_TO_PAGE_CLASS[route];
+
             if (router.currentPageId) {
-                push(CSS_CLASS__CACHE, router.currentPageId);
+                push(CLASS__CACHE, router.currentPageId);
 
                 const pageDestructor = router.pages[router.currentPageId][DESTRUCTOR];
                 pageDestructor && pageDestructor();
             }
 
             router.currentPageId = pageId;
-            push(CSS_CLASS__CURRENT_PAGE_CONTAINER, pageId);
+            push(CLASS__CURRENT_PAGE_CONTAINER, pageId);
+
+            const pageConstructorOnce = router.pages[pageId][CONSTRUCTOR_ONCE];
+            if (pageConstructorOnce && !router.pages[pageId][CONSTRUCTOR_ONCE_CALLED]) {
+                pageConstructorOnce();
+                router.pages[pageId][CONSTRUCTOR_ONCE_CALLED] = true;
+            }
 
             const pageConstructor = router.pages[pageId][CONSTRUCTOR];
             pageConstructor && pageConstructor();
         };
 
-        return router;
-    })();
-
-    router.pages[CSS_CLASS__PAGE_LOGIN] = (function(VALUES) {
-        const page = {};
-
-        const CSS_CLASS__PAGE_LOGIN__LOGO = '.page-login__logo';
-        const CSS_CLASS__PAGE_LOGIN__TITLE = '.page-login__title';
-        const CSS_CLASS__PAGE_LOGIN__SUBTITLE = '.page-login__subtitle';
-        const CSS_CLASS__PAGE_LOGIN__FORM = '.page-login__form';
-        const CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY = '.page-login__form__country';
-        const CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY_ACTIVE = '.page-login__form__country-active';
-        const CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY__INPUT = CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY + ' ' + CSS_CLASS__SINGLE_LINE_INPUT;
-        const CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY__INPUT_PLACEHOLDER = CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY + ' ' + CSS_CLASS__SINGLE_LINE_INPUT_PLACEHOLDER;
-        const CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY_SELECT = '.page-login__form__country-select';
-        const CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY_SELECT__ROW = '.page-login__form__country-select__row';
-        const CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY_SELECT__ROW__TITLE = '.page-login__form__country-select__row__title';
-        const CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY_SELECT__ROW__PHONE_CODE = '.page-login__form__country-select__row__phone-code';
-        const CSS_CLASS__PAGE_LOGIN__FORM__PHONE = '.page-login__form__phone';
-        const CSS_CLASS__PAGE_LOGIN__FORM__PHONE__INPUT = CSS_CLASS__PAGE_LOGIN__FORM__PHONE + ' ' + CSS_CLASS__SINGLE_LINE_INPUT;
-        const CSS_CLASS__PAGE_LOGIN__FORM__PHONE__INPUT_PLACEHOLDER = CSS_CLASS__PAGE_LOGIN__FORM__PHONE + ' ' + CSS_CLASS__SINGLE_LINE_INPUT_PLACEHOLDER;
-        const CSS_CLASS__PAGE_LOGIN__FORM__KEEP_SIGNED = '.page-login__form__keep-signed';
-        const CSS_CLASS__PAGE_LOGIN__FORM__KEEP_SIGNED__TEXT = '.page-login__form__keep-signed__text';
-        const CSS_CLASS__PAGE_LOGIN__FORM__PHONE_SUBMIT = '.page-login__form__phone-submit';
-        const CSS_CLASS__PAGE_LOGIN__FORM__PHONE_SUBMIT__BUTTON = CSS_CLASS__PAGE_LOGIN__FORM__PHONE_SUBMIT + ' button';
-
-        const STATE_ENTER_PHONE = 1;
-
-        page[CONSTRUCTOR] = function() {
-            if (!page.currentState) {
-                page.currentState = STATE_ENTER_PHONE;
-
-                const stateConstructor = page.states[STATE_ENTER_PHONE][CONSTRUCTOR];
-                stateConstructor && stateConstructor();
+        router.goto = function(route) {
+            if (_location.hash.substr(1) === route) {
+                router.onHash();
+            } else {
+                _location.hash = route;
             }
         };
 
-        page.states = {
-            [STATE_ENTER_PHONE]: {
-                [CONSTRUCTOR]: function() {
-                    push(CSS_CLASS__PAGE_LOGIN__LOGO, CSS_CLASS__ICON__TELEGRAM_LOGO);
-                    html(CSS_CLASS__PAGE_LOGIN__TITLE, VALUES.PAGE_LOGIN.TITLE.DEFAULT);
-                    html(CSS_CLASS__PAGE_LOGIN__SUBTITLE, VALUES.PAGE_LOGIN.SUBTITLE.DEFAULT);
-                    push(CSS_CLASS__PAGE_LOGIN__FORM,
-                        CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY,
-                        CSS_CLASS__PAGE_LOGIN__FORM__PHONE,
-                        CSS_CLASS__PAGE_LOGIN__FORM__KEEP_SIGNED,
-                        CSS_CLASS__PAGE_LOGIN__FORM__PHONE_SUBMIT);
-                    $(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY__INPUT).placeholder
-                        = $(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY__INPUT_PLACEHOLDER).innerText
-                        = VALUES.PAGE_LOGIN.COUNTRY_PLACEHOLDER.DEFAULT;
-                    $(CSS_CLASS__PAGE_LOGIN__FORM__PHONE__INPUT).placeholder
-                        = $(CSS_CLASS__PAGE_LOGIN__FORM__PHONE__INPUT_PLACEHOLDER).innerText
-                        = VALUES.PAGE_LOGIN.PHONE_PLACEHOLDER.DEFAULT;
-                    $(CSS_CLASS__PAGE_LOGIN__FORM__PHONE_SUBMIT__BUTTON).innerText = VALUES.PAGE_LOGIN.NEXT;
-                    html(CSS_CLASS__PAGE_LOGIN__FORM__KEEP_SIGNED__TEXT, VALUES.PAGE_LOGIN.KEEP_SIGNED);
-                    push(CSS_CLASS__PAGE_LOGIN__FORM__KEEP_SIGNED, dup(CSS_CLASS__ICON__CHECKBOX_ON));
-                    push(CSS_CLASS__PAGE_LOGIN__FORM__KEEP_SIGNED, dup(CSS_CLASS__ICON__CHECKBOX_OFF));
-                    push(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY, dup(CSS_CLASS__ICON__DOWN));
+        return router;
+    })();
 
-                    for (let i=0; i<COUNTRIES.length; i+=2) {
-                        const countryRow = dup(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY_SELECT__ROW);
-                        countryRow.querySelector(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY_SELECT__ROW__TITLE).innerText = COUNTRIES[i+1];
-                        countryRow.querySelector(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY_SELECT__ROW__PHONE_CODE).innerText = '+' + COUNTRIES[i];
-                        push(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY_SELECT, countryRow);
-                    }
+    router.pages[CLASS__PAGE_CODE] = (function() {
+        const page = {};
 
-                    on(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY__INPUT, 'focus', function() {
-                        $(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY).classList.add(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY_ACTIVE.substr(1));
-                    });
+        return page;
+    })();
 
-                    let lastSelectedCountryCode = null;
+    router.pages[CLASS__PAGE_PHONE] = (function() {
+        const CLASS__PAGE_PHONE__LOGO = '.page-phone__logo';
+        const CLASS__PAGE_PHONE__TITLE = '.page-phone__title';
+        const CLASS__PAGE_PHONE__SUBTITLE = '.page-phone__subtitle';
+        const CLASS__PAGE_PHONE__FORM = '.page-phone__form';
+        const CLASS__PAGE_PHONE__FORM__COUNTRY = '.page-phone__form__country';
+        const CLASS__PAGE_PHONE__FORM__COUNTRY_ACTIVE = '.page-phone__form__country-active';
+        const CLASS__PAGE_PHONE__FORM__COUNTRY__INPUT = CLASS__PAGE_PHONE__FORM__COUNTRY + ' ' + CLASS__SINGLE_LINE_INPUT;
+        const CLASS__PAGE_PHONE__FORM__COUNTRY__INPUT_PLACEHOLDER = CLASS__PAGE_PHONE__FORM__COUNTRY + ' ' + CLASS__SINGLE_LINE_INPUT_PLACEHOLDER;
+        const CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT = '.page-phone__form__country-select';
+        const CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT__ROW = '.page-phone__form__country-select__row';
+        const CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT__ROW__TITLE = '.page-phone__form__country-select__row__title';
+        const CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT__ROW__PHONE_CODE = '.page-phone__form__country-select__row__phone-code';
+        const CLASS__PAGE_PHONE__FORM__PHONE = '.page-phone__form__phone';
+        const CLASS__PAGE_PHONE__FORM__PHONE__INPUT = CLASS__PAGE_PHONE__FORM__PHONE + ' ' + CLASS__SINGLE_LINE_INPUT;
+        const CLASS__PAGE_PHONE__FORM__PHONE__INPUT_PLACEHOLDER = CLASS__PAGE_PHONE__FORM__PHONE + ' ' + CLASS__SINGLE_LINE_INPUT_PLACEHOLDER;
+        const CLASS__PAGE_PHONE__FORM__KEEP_SIGNED = '.page-phone__form__keep-signed';
+        const CLASS__PAGE_PHONE__FORM__KEEP_SIGNED__TEXT = '.page-phone__form__keep-signed__text';
+        const CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT = '.page-phone__form__phone-submit';
+        const CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT__BUTTON = CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT + ' button';
 
-                    on('body', 'mousedown', function(event) {
-                        if (!$(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY).contains(event.target)) {
-                            return $(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY).classList.remove(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY_ACTIVE.substr(1));
-                        }
+        const page = {
+            submitting: false,
+        };
+        const phone = {};
+        const countries = {
+            rows: [],
+            rowsVisible: 0,
+            shown: false,
+            selectedCode: null,
+        };
 
-                        const row = event.target.closest(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY_SELECT__ROW);
+        phone.onInput = function(event) {
+            if (event.keyCode === KEY_CODE_ENTER) return page.onSubmit(event);
+            if (CONTROL_KEY_CODES.includes(event.keyCode)) return;
+            if (event.altKey || event.ctrlKey || event.metaKey) return;
+            if (!event.target.value && event.key === '+') return; // allow first plus
+            if (!event.key.match(/[0-9 ]/)) { // block all other non-num
+                event.preventDefault();
+            }
+        };
 
-                        if (row) {
-                            const countryName = row.querySelector(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY_SELECT__ROW__TITLE).innerText;
-                            const phoneCode = row.querySelector(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY_SELECT__ROW__PHONE_CODE).innerText;
+        phone.onInputCheck = function(event) {
+            const phone = event.target.value;
 
-                            const currentInputValue = $(CSS_CLASS__PAGE_LOGIN__FORM__PHONE__INPUT).value;
+            let phoneValidated = phone
+                .replace(/[^0-9 ]/g, '')
+                .replace(/ {2,}/g, ' ');
 
-                            const backupedUserInput = lastSelectedCountryCode
-                                && currentInputValue.indexOf(lastSelectedCountryCode) === 0
-                                && currentInputValue.substr(lastSelectedCountryCode.length + 1);
+            phoneValidated = '+' + phoneValidated.replace(/^ +/, '');
 
-                            $(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY__INPUT).value = countryName;
-                            $(CSS_CLASS__PAGE_LOGIN__FORM__PHONE__INPUT).value = phoneCode + ' ' + (backupedUserInput || '');
+            if (phoneValidated !== phone && phone.length) {
+                event.target.value = phoneValidated;
+            }
 
-                            lastSelectedCountryCode = phoneCode;
+            if (phoneValidated.length > 1 && phoneValidated.trim() !== countries.selectedCode) {
+                show(CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT);
+            } else {
+                hide(CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT);
+            }
+        };
 
-                            $(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY).classList.remove(CSS_CLASS__PAGE_LOGIN__FORM__COUNTRY_ACTIVE.substr(1));
+        countries.show = function() {
+            if (!countries.rowsVisible) return;
 
-                            setTimeout(() => {
-                                $(CSS_CLASS__PAGE_LOGIN__FORM__PHONE__INPUT).focus();
-                            }, 0);
-                        }
-                    });
+            $(CLASS__PAGE_PHONE__FORM__COUNTRY).classList.add(CLASS__PAGE_PHONE__FORM__COUNTRY_ACTIVE.substr(1));
+            show(CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT);
+            return countries.shown = true;
+        };
 
-                    on(CSS_CLASS__PAGE_LOGIN__FORM__PHONE__INPUT, 'keyup keydown keypress', function(event) {
-                        if (event.altKey || event.ctrlKey || event.metaKey
-                            || event.keyCode === 8 // backspace
-                            || event.keyCode === 46 // delete
-                            || (!event.target.value && event.key === '+')
-                        ) return;
+        countries.hide = function() {
+            $(CLASS__PAGE_PHONE__FORM__COUNTRY).classList.remove(CLASS__PAGE_PHONE__FORM__COUNTRY_ACTIVE.substr(1));
+            hide(CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT);
+            return countries.shown = false;
+        };
 
-                        if (!event.key.match(/[0-9 ]/)) {
-                            event.preventDefault();
-                        }
-                    });
+        countries.init = function() {
+            for (let i=0; i<COUNTRIES.length; i+=2) {
+                const countryRow = dup(CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT__ROW);
+                countryRow.querySelector(CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT__ROW__TITLE).innerText = COUNTRIES[i+1];
+                countryRow.querySelector(CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT__ROW__PHONE_CODE).innerText = '+' + COUNTRIES[i];
+                push(CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT, countryRow);
+                countryRow.dataset.title = normalizeStr(COUNTRIES[i+1]);
+                countries.rows.push(countryRow);
+            }
 
-                    on(CSS_CLASS__PAGE_LOGIN__FORM__PHONE__INPUT, 'change blur keyup', function(event) {
-                        const phone = event.target.value;
+            countries.rowsVisible = countries.rows.length;
+        };
 
-                        let phoneValidated = phone
-                            .replace(/[^0-9 ]/g, '')
-                            .replace(/ {2,}/g, ' ');
+        countries.onInput = function(event) {
+            const inputValue = normalizeStr(event.target.value).trim();
 
-                        phoneValidated = '+' + phoneValidated.replace(/^ +/, '');
+            countries.rowsVisible = 0;
 
-                        if (phoneValidated !== phone && phone.length) {
-                            event.target.value = phoneValidated;
-                        }
-                    });
-                },
-                [DESTRUCTOR]: function() {
-                    push(CSS_CLASS__CACHE, CSS_CLASS__ICON__TELEGRAM_LOGO);
-                },
-            },
+            countries.rows.forEach(countryRow => {
+                if (!inputValue.length || countryRow.dataset.title.indexOf(inputValue) === 0) {
+                    show(countryRow, 'flex');
+                    countries.rowsVisible++;
+                } else {
+                    hide(countryRow);
+                }
+            });
+
+            countries.rowsVisible && countries.show() || countries.hide();
+        };
+
+        countries.onClick = function(event) {
+            if (!$(CLASS__PAGE_PHONE__FORM__COUNTRY).contains(event.target)) {
+                return countries.hide();
+            }
+
+            const row = event.target.closest(CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT__ROW);
+
+            if (row) {
+                const countryName = row.querySelector(CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT__ROW__TITLE).innerText;
+                const phoneCode = row.querySelector(CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT__ROW__PHONE_CODE).innerText;
+
+                const currentInputValue = $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).value;
+
+                const backupedUserInput = countries.selectedCode
+                    && currentInputValue.indexOf(countries.selectedCode) === 0
+                    && currentInputValue.substr(countries.selectedCode.length + 1);
+
+                $(CLASS__PAGE_PHONE__FORM__COUNTRY__INPUT).value = countryName;
+                $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).value = phoneCode + ' ' + (backupedUserInput || '');
+
+                countries.selectedCode = phoneCode;
+                countries.hide();
+
+                setTimeout(() => {
+                    $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).focus();
+                }, 0);
+            }
+        };
+
+        page.onSubmit = function(event) {
+            if (page.submitting) return;
+            page.submitting = true;
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            const phone = $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).value;
+            console.log('phone:', phone);
+
+            $(CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT__BUTTON).classList.add(CLASS__BUTTON_BUSY);
+
+            setTimeout(() => {
+                router.goto(ROUTE_CODE);
+            }, 1000);
+        };
+
+        page.submitEnd = function() {
+            page.submitting = false;
+            $(CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT__BUTTON).classList.remove(CLASS__BUTTON_BUSY);
+        };
+
+        page[CONSTRUCTOR_ONCE] = function() {
+            html(CLASS__PAGE_PHONE__TITLE, VALUES.PAGE_PHONE.TITLE.DEFAULT);
+            html(CLASS__PAGE_PHONE__SUBTITLE, VALUES.PAGE_PHONE.SUBTITLE.DEFAULT);
+            $(CLASS__PAGE_PHONE__FORM__COUNTRY__INPUT).placeholder
+                = $(CLASS__PAGE_PHONE__FORM__COUNTRY__INPUT_PLACEHOLDER).innerText
+                = VALUES.PAGE_PHONE.COUNTRY_PLACEHOLDER.DEFAULT;
+            $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).placeholder
+                = $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT_PLACEHOLDER).innerText
+                = VALUES.PAGE_PHONE.PHONE_PLACEHOLDER.DEFAULT;
+            $(CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT__BUTTON).innerText = VALUES.PAGE_PHONE.NEXT;
+            html(CLASS__PAGE_PHONE__FORM__KEEP_SIGNED__TEXT, VALUES.PAGE_PHONE.KEEP_SIGNED);
+
+            push(CLASS__PAGE_PHONE__LOGO, dup(CLASS__ICON__TELEGRAM_LOGO));
+            push(CLASS__PAGE_PHONE__FORM__KEEP_SIGNED, dup(CLASS__ICON__CHECKBOX_ON));
+            push(CLASS__PAGE_PHONE__FORM__KEEP_SIGNED, dup(CLASS__ICON__CHECKBOX_OFF));
+            push(CLASS__PAGE_PHONE__FORM__COUNTRY, dup(CLASS__ICON__DOWN));
+
+            countries.init();
+
+            on(CLASS__PAGE_PHONE__FORM__COUNTRY__INPUT, 'focus', countries.show);
+            on(CLASS__PAGE_PHONE__FORM__COUNTRY__INPUT, 'keyup keypress focus', countries.onInput);
+            on(CLASS__PAGE_PHONE__FORM__PHONE__INPUT, 'keyup keydown keypress', phone.onInput);
+            on(CLASS__PAGE_PHONE__FORM__PHONE__INPUT, 'keyup change blur', phone.onInputCheck);
+            on(CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT__BUTTON, 'click', page.onSubmit);
+            on(CLASS__PAGE_PHONE__FORM, 'submit', page.onSubmit);
+        }
+
+        page[CONSTRUCTOR] = function() {
+            on('body', 'mousedown', countries.onClick);
+        };
+
+        page[DESTRUCTOR] = function() {
+            un('body', 'mousedown', countries.onClick);
+
+            page.submitEnd();
+            countries.hide();
+
+            $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).value = '';
+            $(CLASS__PAGE_PHONE__FORM__COUNTRY__INPUT).value = '';
+
+            hide(CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT);
         };
 
         return page;
-    })(VALUES);
+    })();
 
-    _window.addEventListener('DOMContentLoaded', function() {
-        router.goto(user.isGuest()
-            ? CSS_CLASS__PAGE_LOGIN
-            : CSS_CLASS__PAGE_HOME);
+    on(_window, 'hashchange', router.onHash);
+
+    on(_window, 'DOMContentLoaded', function() {
+        router.goto(user.isGuest() ? ROUTE_PHONE : ROUTE_HOME);
     });
 })(window, document, location);

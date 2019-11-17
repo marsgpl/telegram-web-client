@@ -7,6 +7,8 @@ const disclaimer = `
  * This code is designed to be compiled with google closure compiler
  * using --compilation_level ADVANCED
  *
+ * It's not a production code: no polyfills and no transpilation to es5
+ *
  * CSS classes are obfuscated
  */
 `;

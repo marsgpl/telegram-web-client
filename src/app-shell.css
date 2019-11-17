@@ -18,37 +18,37 @@ i {
     font-style: normal;
 }
 
-.page-login {
+.page-phone {
     text-align: center;
 }
 
-.page-login__logo {
+.page-phone__logo {
     width: 160px;
     height: 160px;
     margin: 108px auto 32px;
 }
 
-.page-login__logo .icon__telegram-logo {
+.page-phone__logo .icon__telegram-logo {
     width: 100%;
     height: 100%;
 }
 
-.page-login__title {
+.page-phone__title {
     font-size: 2rem;
     line-height: 2;
     font-weight: semibold;
 }
 
-.page-login__subtitle {
+.page-phone__subtitle {
     color: #707579;
     margin-bottom: 50px;
 }
 
-.page-login__form {
+.page-phone__form {
     user-select: none;
 }
 
-.page-login__form label {
+.page-phone__form label {
     display: block;
     margin: 0 auto 24px;
     width: 360px;
@@ -66,9 +66,14 @@ button {
     width: 100%;
     font-weight: semibold;
     outline: none;
+    cursor: pointer;
 }
 
-.page-login__form label .single-line-input {
+button:hover {
+    background: #4796E1;
+}
+
+.page-phone__form label .single-line-input {
     border: 1px solid #DADCE0;
     border-radius: 10px;
     line-height: 28px;
@@ -79,7 +84,7 @@ button {
     width: 100%;
 }
 
-.page-login__form label .single-line-input-placeholder {
+.page-phone__form label .single-line-input-placeholder {
     display: none;
     position: absolute;
     top: -8px;
@@ -90,26 +95,26 @@ button {
     font-size: 12px;
 }
 
-.page-login__form label .single-line-input:valid ~ .single-line-input-placeholder {
+.page-phone__form label .single-line-input:valid ~ .single-line-input-placeholder {
     display: block;
 }
 
-.page-login__form label .single-line-input::placeholder {
+.page-phone__form label .single-line-input::placeholder {
     color: #AEB7BE;
 }
 
-.page-login__form label .single-line-input:focus {
+.page-phone__form label .single-line-input:focus {
     border: 2px solid #4EA4F6;
     padding: 11px 13px;
     caret-color: #4EA4F6;
 }
 
-.page-login__form label .single-line-input:focus ~ .single-line-input-placeholder {
+.page-phone__form label .single-line-input:focus ~ .single-line-input-placeholder {
     color: #3390EC;
     font-weight: semibold;
 }
 
-.page-login__form .page-login__form__keep-signed {
+.page-phone__form .page-phone__form__keep-signed {
     display: flex;
     flex-direction: row-reverse;
     align-items: center;
@@ -118,29 +123,29 @@ button {
     color: #2E2E2E;
 }
 
-.page-login__form__keep-signed input {
+.page-phone__form__keep-signed input {
     visibility: hidden;
     position: absolute;
 }
 
-.page-login__form__keep-signed .icon__checkbox-on {
+.page-phone__form__keep-signed .icon__checkbox-on {
     display: none;
 }
 
-.page-login__form__keep-signed .icon__checkbox-on,
-.page-login__form__keep-signed .icon__checkbox-off {
+.page-phone__form__keep-signed .icon__checkbox-on,
+.page-phone__form__keep-signed .icon__checkbox-off {
     margin: 0 32px 0 16px;
 }
 
-.page-login__form__keep-signed input:checked ~ .icon__checkbox-on {
+.page-phone__form__keep-signed input:checked ~ .icon__checkbox-on {
     display: block;
 }
 
-.page-login__form__keep-signed input:checked ~ .icon__checkbox-off {
+.page-phone__form__keep-signed input:checked ~ .icon__checkbox-off {
     display: none;
 }
 
-.page-login__form__country .icon__down {
+.page-phone__form__country .icon__down {
     cursor: pointer;
     position: absolute;
     padding: 15px;
@@ -148,7 +153,7 @@ button {
     right: 0;
 }
 
-.page-login__form__country-select {
+.page-phone__form__country-select {
     display: none;
     position: absolute;
     top: 58px;
@@ -164,7 +169,7 @@ button {
     overflow: auto;
 }
 
-.page-login__form__country-select__row {
+.page-phone__form__country-select__row {
     height: 56px;
     line-height: 56px;
     display: flex;
@@ -172,32 +177,32 @@ button {
     cursor: pointer;
 }
 
-.page-login__form__country-select__row:hover {
+.page-phone__form__country-select__row:hover {
     background: #F4F4F5;
 }
 
-.page-login__form__country-select__row__title {
+.page-phone__form__country-select__row__title {
     flex-grow: 1;
     text-align: left;
 }
 
-.page-login__form__country-select__row__phone-code {
+.page-phone__form__country-select__row__phone-code {
     color: #707579;
 }
 
-.page-login__form__country-active .icon__down {
+.page-phone__form__country-active .icon__down {
     transform: rotate(180deg);
 }
 
-.page-login__form__country-active .icon__down path {
+.page-phone__form__country-active .icon__down path {
     fill: #4EA4F6;
 }
 
-.page-login__form__country-active .page-login__form__country-select {
+.page-phone__form__country-active .page-phone__form__country-select {
     display: block;
 }
 
-.page-login__form .page-login__form__phone-submit {
+.page-phone__form .page-phone__form__phone-submit {
     padding-top: 20px;
     display: none;
 }

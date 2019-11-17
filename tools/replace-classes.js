@@ -24,7 +24,7 @@ nextClassName.index = 10;
 
     await FsFetch.precacheDir(srcDir, cache);
 
-    const CLASS_NAME_JS_REGEXP = /CSS_CLASS__([a-z0-9_]+) = '\.([a-z0-9_-]+)'/gi;
+    const CLASS_NAME_JS_REGEXP = /CLASS__([a-z0-9_]+) = '\.([a-z0-9_-]+)'/gi;
     const CLASS_NAME_HTML_REGEXP = /class="([a-z0-9_-]+)"/gi;
     const CLASS_NAME_CSS_REGEXP = /\.([a-z0-9_-]+)/gi;
 
@@ -52,7 +52,7 @@ nextClassName.index = 10;
             if (fileExt === 'js') {
                 fileContent = fileContent.replace(CLASS_NAME_JS_REGEXP,
                     function(_, varPart, className) {
-                        return `CSS_CLASS__${varPart} = '\.${classNames[className] || className}'`;
+                        return `CLASS__${varPart} = '\.${classNames[className] || className}'`;
                     });
             } else if (fileExt === 'css') {
                 fileContent = fileContent.replace(CLASS_NAME_CSS_REGEXP,
