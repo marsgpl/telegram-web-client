@@ -1,5 +1,9 @@
 @keyframes spin { 100% { transform:rotate(360deg); } }
 
+html, body, .current-page-container {
+    height: 100%;
+}
+
 body, input, button {
     margin: 0;
     font: 16px / 20px Helvetica, sans-serif;
@@ -18,6 +22,7 @@ input, button, select, textarea {
 
 .current-page-container {
     margin: 0 auto;
+    overflow: auto;
 }
 
 .cache {
@@ -37,13 +42,52 @@ i {
     text-align: center;
 }
 
+.page-home {
+    background: #E6EBEE;
+    height: 100%;
+}
+
+.page-home__chats {
+    border-right: 1px solid #DADCE0;
+    background: #FFF;
+    width: 421px;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    box-sizing: border-box;
+}
+
+.page-home__chats .icon__wait {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 52px;
+    height: 52px;
+    margin: -26px 0 0 -26px;
+    display: block;
+    animation: spin 2s linear infinite;
+}
+
+.page-home__chats .icon__wait path {
+    fill: #4EA4F6;
+}
+
 .page-phone__logo,
 .page-code__logo,
 .page-pass__logo,
 .page-name__logo {
     width: 160px;
     height: 160px;
-    margin: 108px auto 32px;
+    margin: 68px auto 32px;
+}
+
+.page-phone__logo::before,
+.page-code__logo::before,
+.page-pass__logo::before,
+.page-name__logo::before {
+    display: block;
+    content: ' ';
 }
 
 .page-name__logo {
@@ -169,7 +213,7 @@ i {
     position: relative;
 }
 
-.button svg {
+.button .icon__wait {
     display: none;
     position: absolute;
     top: 14px;
@@ -182,7 +226,7 @@ i {
     background: #4796E1;
 }
 
-.button-busy svg {
+.button-busy .icon__wait {
     display: block;
     animation: spin 2s linear infinite;
 }
@@ -386,7 +430,7 @@ label .single-line-input.single-line-input__error ~ .single-line-input-placehold
     }
 }
 
-@media all and (min-width: 321px) and (max-width: 799px) {
+@media all and (min-width: 321px) and (max-width: 569px) {
     .page-phone__form label,
     .page-code__form label,
     .page-pass__form label,
@@ -416,11 +460,18 @@ label .single-line-input.single-line-input__error ~ .single-line-input-placehold
     }
 }
 
-@media all and (max-height: 800px) and (min-width: 800px) {
+@media all and (min-height: 830px) and (min-width: 800px) {
     .page-phone__logo,
     .page-code__logo,
     .page-pass__logo,
     .page-name__logo {
-        margin-top: 68px;
+        margin-top: 108px;
+    }
+}
+
+@media all and (max-width: 420px) {
+    .page-home__chats {
+        width: 100%;
+        border: none;
     }
 }

@@ -55,6 +55,9 @@
         $(cssSelector).style.visibility = isVisible ? 'visible' : 'hidden';
     }
 
+    const TG_APP_ID = '1026839';
+    const TG_APP_HASH = 'ff52d6e1427f0f8279e13236ebf2b5f9';
+
     const CONSTRUCTOR_ONCE = '_';
     const CONSTRUCTOR_ONCE_CALLED = '__';
     const CONSTRUCTOR = '____';
@@ -418,6 +421,22 @@
         return user;
     })();
 
+    const tg = (function() {
+        const tg = {};
+
+        tg.requestCode = function(phone) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve({
+                        phoneCodeHash: Math.random(),
+                    });
+                }, 1000);
+            });
+        };
+
+        return tg;
+    })();
+
     const router = (function() {
         const router = {
             pages: {},
@@ -461,7 +480,13 @@
     })();
 
     router.pages[CLASS__PAGE_HOME] = (function() {
+        const CLASS__PAGE_HOME__CHATS = '.page-home__chats';
+
         const page = {};
+
+        page[CONSTRUCTOR_ONCE] = function() {
+            push(CLASS__PAGE_HOME__CHATS, dup(CLASS__ICON__WAIT));
+        };
 
         return page;
     })();
@@ -893,9 +918,10 @@
 
             prefetchImg(MONKEY_PLAIN);
 
-            setTimeout(() => {
+            tg.requestCode(user.phone).then(res => {
+                user.phoneCodeHash = res.phoneCodeHash;
                 router.goto(ROUTE_CODE);
-            }, 1000);
+            });
         };
 
         page.submitEnd = function() {
@@ -950,6 +976,6 @@
     on(_window, 'hashchange', router.onHash);
 
     on(_window, 'DOMContentLoaded', function() {
-       router.goto(user.isGuest() ? ROUTE_PHONE : ROUTE_HOME);
+        router.goto(user.isGuest() ? ROUTE_PHONE : ROUTE_HOME);
     });
 })(window, document, location);

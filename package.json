@@ -29,7 +29,6 @@
     "uglifycss": "0.0.29"
   },
   "dependencies": {
-    "@airgram/web": "^2.1.1",
-    "airgram": "^2.1.1"
+    "tiny-server": "^1.1.0"
   }
 }
