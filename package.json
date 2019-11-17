@@ -26,9 +26,8 @@
   "devDependencies": {
     "google-closure-compiler": "^20191027.0.0",
     "html-minifier": "^4.0.0",
+    "tiny-server": "^1.1.0",
     "uglifycss": "0.0.29"
   },
-  "dependencies": {
-    "tiny-server": "^1.1.0"
-  }
+  "dependencies": {}
 }
