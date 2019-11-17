@@ -36,8 +36,10 @@
                         <i class="page-phone__form__keep-signed__text"></i>
                     </label>
 
-                    <label class="page-phone__form__phone-submit">
-                        <button></button>
+                    <label class="page-phone__form__submit">
+                        <button class="button" type="submit">
+                            <i class="page-phone__form__submit__text"></i>
+                        </button>
                     </label>
                 </form>
             </i>
@@ -48,11 +50,69 @@
             </i>
 
             <i class="page-code">
-                code
+                <i class="page-code__logo"></i>
+
+                <i class="page-code__title"></i>
+
+                <i class="page-code__subtitle"></i>
+
+                <form class="page-code__form">
+                    <label class="page-code__form__code">
+                        <input class="single-line-input" type="number" required />
+                        <i class="single-line-input-placeholder"></i>
+                    </label>
+                </form>
+            </i>
+
+            <i class="page-pass">
+                <i class="page-pass__logo"></i>
+
+                <i class="page-pass__title"></i>
+
+                <i class="page-pass__subtitle"></i>
+
+                <form class="page-pass__form">
+                    <label class="page-pass__form__pass">
+                        <input class="single-line-input" type="password" required />
+                        <i class="single-line-input-placeholder"></i>
+                    </label>
+
+                    <label class="page-pass__form__submit">
+                        <button class="button" type="submit">
+                            <i class="page-pass__form__submit__text"></i>
+                        </button>
+                    </label>
+                </form>
+            </i>
+
+            <i class="page-name">
+                <i class="page-name__logo"></i>
+
+                <i class="page-name__title"></i>
+
+                <i class="page-name__subtitle"></i>
+
+                <form class="page-name__form">
+                    <label class="page-name__form__first-name">
+                        <input class="single-line-input" required />
+                        <i class="single-line-input-placeholder"></i>
+                    </label>
+
+                    <label class="page-name__form__last-name">
+                        <input class="single-line-input" required />
+                        <i class="single-line-input-placeholder"></i>
+                    </label>
+
+                    <label class="page-name__form__submit">
+                        <button class="button" type="submit">
+                            <i class="page-name__form__submit__text"></i>
+                        </button>
+                    </label>
+                </form>
             </i>
 
             <i class="page-home">
-                home
+                TODO: chat list
             </i>
 
             <svg class="icon__telegram-logo" viewbox="0 0 240 240">
@@ -60,21 +120,49 @@
                 <path fill="#fff" d="M45 122l44-20 75-31c5-1 14-3 14 4 0 11-2 21-3 31l-11 68c-2 7-11 11-17 6l-43-29c-5-5-1-11 3-15 12-12 25-22 36-34 4-8-5-1-9 1-16 11-32 23-49 32-9 5-19 2-28-1-8-3-19-7-12-12z" />
             </svg>
 
-            <svg class="icon__checkbox-on" width="24" height="24">
+            <svg class="icon__checkbox-on" viewbox="0 0 24 24">
                 <g fill="none" fill-rule="evenodd">
                     <path fill="#4EA4F6" fill-rule="nonzero" d="M18 3a3 3 0 013 3v12a3 3 0 01-3 3H6a3 3 0 01-3-3V6a3 3 0 013-3h12zm-.7 4.3L10 14.6l-3.3-3.3a1 1 0 10-1.4 1.4l4 4c.4.4 1 .4 1.4 0l8-8a1 1 0 10-1.4-1.4z"/>
                 </g>
             </svg>
 
-            <svg class="icon__checkbox-off" width="24" height="24">
+            <svg class="icon__checkbox-off" viewbox="0 0 24 24">
                 <g fill="none" fill-rule="evenodd">
                     <path fill="#DADCE0" fill-rule="nonzero" d="M6 3h12a3 3 0 013 3v12a3 3 0 01-3 3H6a3 3 0 01-3-3V6a3 3 0 013-3zm0 2a1 1 0 00-1 1v12c0 .6.4 1 1 1h12c.6 0 1-.4 1-1V6c0-.6-.4-1-1-1H6z"/>
                 </g>
             </svg>
 
-            <svg class="icon__down" width="24" height="24">
+            <svg class="icon__down" viewbox="0 0 24 24">
                 <g fill="none" fill-rule="evenodd">
                     <path fill="#8D969C" fill-rule="nonzero" d="M12 14.6l6.3-6.3a1 1 0 011.4 1.4l-7 7a1 1 0 01-1.4 0l-7-7a1 1 0 011.4-1.4l6.3 6.3z"/>
+                </g>
+            </svg>
+
+            <svg class="icon__wait" viewbox="0 0 32 32">
+                <path fill="#fff" fill-rule="nonzero" d="M16 0a16 16 0 110 32 16 16 0 010-32zm0 3a13 13 0 100 26 13 13 0 000-26zm-1.5 13.7V7.5a1.5 1.5 0 013-.2v8l4.6 4.3c.4.8.4 1.5 0 2.2-.8.7-1.5.7-2.2.3L15 17.2l-.2-.2z"/>
+            </svg>
+
+            <svg class="icon__pencil" viewbox="0 0 24 24">
+                <g fill="none" fill-rule="evenodd">
+                    <path fill="#707579" fill-rule="nonzero" d="M7.7 20.7a1 1 0 01-.7.3H4a1 1 0 01-1-1v-3c0-.3.1-.5.3-.7L16.6 3a2 2 0 012.7-.1l.1.1L21 4.6c.7.7.8 1.9.1 2.7l-.1.1L7.7 20.7zM5 17.4V19h1.6l10-10L15 7.4l-10 10zm13-13L16.4 6 18 7.6 19.6 6 18 4.4z"/>
+                </g>
+            </svg>
+
+            <svg class="icon__eye-on" viewbox="0 0 24 24">
+                <g fill="none" fill-rule="evenodd">
+                    <path fill="#8D969C" fill-rule="nonzero" d="M12 5.5c5.9 0 10 5 10 6.5s-4.1 6.5-10 6.5c-5.8 0-10-5-10-6.5s4.2-6.5 10-6.5zM12 8a4 4 0 100 8 4 4 0 000-8zm0 2.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"/>
+                </g>
+            </svg>
+
+            <svg class="icon__eye-off" viewbox="0 0 24 24">
+                <g fill="none" fill-rule="evenodd">
+                    <path fill="#8D969C" fill-rule="nonzero" d="M3.2 4.3a1 1 0 011.4-.1l16 14a1 1 0 01-1.2 1.6l-2.7-2.4c-1.4.7-3 1.1-4.7 1.1-5.8 0-10-5-10-6.5 0-.9 1.3-2.8 3.5-4.3l-2.2-2a1 1 0 010-1.4zM8 12a4 4 0 006.3 3.3l-2.1-1.8H12c-.8 0-1.5-.7-1.5-1.5l-2-1.8A4 4 0 008 12zm4-6.5c5.9 0 10 5 10 6.5 0 .6-.7 1.9-2 3l-4-3.5A4 4 0 0012.2 8H12L9.5 5.8c.8-.2 1.6-.3 2.5-.3z"/>
+                </g>
+            </svg>
+
+            <svg class="icon__camera-add" viewbox="0 0 24 24">
+                <g fill="none" fill-rule="evenodd">
+                    <path fill="#fff" fill-rule="nonzero" d="M19.9 16h.1c.5 0 1 .4 1 .9V19h2c.5 0 1 .4 1 .9v.1c0 .5-.4 1-.9 1H21v2c0 .5-.4 1-.9 1H20a1 1 0 01-1-.9V21h-2a1 1 0 01-1-.9V20c0-.5.4-1 .9-1H19v-2c0-.5.4-1 .9-1h.1-.1zM8.4 2h5.2c.5 0 1 .2 1.3.5h.1L16.4 4H18a3 3 0 013 2.8V12a1 1 0 01-2 .1V7c0-.5-.4-1-.9-1H16.4a2 2 0 01-1.3-.5H15L13.6 4H8.4L7 5.4a2 2 0 01-1.2.6H4a1 1 0 00-1 .9V18c0 .5.4 1 .9 1H13a1 1 0 01.1 2H4a3 3 0 01-3-2.8V7a3 3 0 012.8-3h1.8L7 2.6A2 2 0 018.2 2h5.4-5.2zM11 7a5 5 0 110 10 5 5 0 010-10zm0 2a3 3 0 100 6 3 3 0 000-6z"/>
                 </g>
             </svg>
         </i>

@@ -1,7 +1,19 @@
+@keyframes spin { 100% { transform:rotate(360deg); } }
+
 body, input, button {
     margin: 0;
     font: 16px / 20px Helvetica, sans-serif;
     -webkit-font-smoothing: antialiased;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+}
+
+input, button, select, textarea {
+    -webkit-appearance: none;
 }
 
 .current-page-container {
@@ -18,14 +30,57 @@ i {
     font-style: normal;
 }
 
-.page-phone {
+.page-phone,
+.page-code,
+.page-pass,
+.page-name {
     text-align: center;
 }
 
-.page-phone__logo {
+.page-phone__logo,
+.page-code__logo,
+.page-pass__logo,
+.page-name__logo {
     width: 160px;
     height: 160px;
     margin: 108px auto 32px;
+}
+
+.page-name__logo {
+    background: #4EA4F6;
+    border-radius: 50%;
+    margin-bottom: 22px;
+    cursor: pointer;
+}
+
+.page-name__logo:hover {
+    background: #4796E1;
+}
+
+.page-name__logo svg {
+    width: 48px;
+    height: 48px;
+    top: 56px;
+    left: 3px;
+    position: relative;
+}
+
+.page-code__logo {
+    background: url(m1.svg) no-repeat top 21px center / 134px 134px;
+}
+
+.page-code__logo.page-code__logo_error {
+    background-image: url(m4.svg);
+}
+
+.page-pass__logo {
+    background: url(m3.svg) no-repeat top 21px center / 134px 134px;
+    position: relative;
+    top: 6px;
+}
+
+.page-pass__logo.page-pass__logo_peep {
+    background: url(m2.svg) no-repeat top 21px center / 134px 134px;
 }
 
 .page-phone__logo .icon__telegram-logo {
@@ -33,29 +88,74 @@ i {
     height: 100%;
 }
 
-.page-phone__title {
+.page-phone__title,
+.page-code__title,
+.page-pass__title,
+.page-name__title {
     font-size: 2rem;
     line-height: 2;
-    font-weight: semibold;
 }
 
-.page-phone__subtitle {
+.page-code__title {
+    cursor: pointer;
+}
+
+.page-code__title .icon__pencil {
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 6px;
+    position: relative;
+    top: 1px;
+    width: 24px;
+    height: 24px;
+}
+
+.page-phone__subtitle,
+.page-code__subtitle,
+.page-pass__subtitle,
+.page-name__subtitle {
     color: #707579;
     margin-bottom: 50px;
 }
 
-.page-phone__form {
+.page-phone__form,
+.page-code__form,
+.page-pass__form,
+.page-name__form {
     user-select: none;
 }
 
-.page-phone__form label {
+.page-phone__form label,
+.page-code__form label,
+.page-pass__form label,
+.page-name__form label {
     display: block;
     margin: 0 auto 24px;
     width: 360px;
     position: relative;
 }
 
-button {
+.page-pass__form__pass svg {
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    cursor: pointer;
+    padding: 13px;
+    top: 2px;
+    right: 2px;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.page-pass__form__pass .single-line-input {
+    padding-right: 54px;
+}
+
+.page-pass__form__pass .single-line-input:hover {
+    padding-right: 53px;
+}
+
+.button {
     display: block;
     background: #4EA4F6;
     color: #fff;
@@ -64,16 +164,30 @@ button {
     height: 54px;
     border-radius: 10px;
     width: 100%;
-    font-weight: semibold;
     outline: none;
     cursor: pointer;
+    position: relative;
 }
 
-button:hover {
+.button svg {
+    display: none;
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 26px;
+}
+
+.button:hover,
+.button-busy {
     background: #4796E1;
 }
 
-.page-phone__form label .single-line-input {
+.button-busy svg {
+    display: block;
+    animation: spin 2s linear infinite;
+}
+
+.single-line-input {
     border: 1px solid #DADCE0;
     border-radius: 10px;
     line-height: 28px;
@@ -84,7 +198,15 @@ button:hover {
     width: 100%;
 }
 
-.page-phone__form label .single-line-input-placeholder {
+label .single-line-input.single-line-input__error {
+    border-color: #E53935;
+}
+
+label .single-line-input.single-line-input__error ~ .single-line-input-placeholder {
+    color: #E53935;
+}
+
+.single-line-input-placeholder {
     display: none;
     position: absolute;
     top: -8px;
@@ -95,23 +217,42 @@ button:hover {
     font-size: 12px;
 }
 
-.page-phone__form label .single-line-input:valid ~ .single-line-input-placeholder {
+.single-line-input:valid ~ .single-line-input-placeholder {
     display: block;
 }
 
-.page-phone__form label .single-line-input::placeholder {
+.single-line-input::placeholder {
     color: #AEB7BE;
 }
 
-.page-phone__form label .single-line-input:focus {
+.single-line-input:focus {
     border: 2px solid #4EA4F6;
     padding: 11px 13px;
     caret-color: #4EA4F6;
 }
 
-.page-phone__form label .single-line-input:focus ~ .single-line-input-placeholder {
+.single-line-input:focus ~ .single-line-input-placeholder {
     color: #3390EC;
-    font-weight: semibold;
+}
+
+.page-phone__form__country .icon__down {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    position: absolute;
+    padding: 13px;
+    top: 2px;
+    right: 2px;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.page-phone__form__country .single-line-input {
+    padding-right: 54px;
+}
+
+.page-phone__form__country .single-line-input:hover {
+    padding-right: 53px;
 }
 
 .page-phone__form .page-phone__form__keep-signed {
@@ -121,6 +262,7 @@ button:hover {
     justify-content: flex-end;
     cursor: pointer;
     color: #2E2E2E;
+    margin-bottom: 44px;
 }
 
 .page-phone__form__keep-signed input {
@@ -135,6 +277,8 @@ button:hover {
 .page-phone__form__keep-signed .icon__checkbox-on,
 .page-phone__form__keep-signed .icon__checkbox-off {
     margin: 0 32px 0 16px;
+    width: 24px;
+    height: 24px;
 }
 
 .page-phone__form__keep-signed input:checked ~ .icon__checkbox-on {
@@ -143,14 +287,6 @@ button:hover {
 
 .page-phone__form__keep-signed input:checked ~ .icon__checkbox-off {
     display: none;
-}
-
-.page-phone__form__country .icon__down {
-    cursor: pointer;
-    position: absolute;
-    padding: 15px;
-    top: 0;
-    right: 0;
 }
 
 .page-phone__form__country-select {
@@ -202,7 +338,89 @@ button:hover {
     display: block;
 }
 
-.page-phone__form .page-phone__form__phone-submit {
-    padding-top: 20px;
-    display: none;
+.page-phone__form .page-phone__form__submit {
+    visibility: hidden;
+}
+
+@media all and (max-width: 320px) {
+    .page-phone__form label,
+    .page-code__form label,
+    .page-pass__form label,
+    .page-name__form label {
+        display: block;
+        margin: 0 auto 14px;
+        width: calc(100% - 24px);
+        position: relative;
+    }
+
+    .page-phone__subtitle,
+    .page-code__subtitle,
+    .page-pass__subtitle,
+    .page-name__subtitle {
+        margin-bottom: 20px;
+    }
+
+    .page-phone__logo,
+    .page-code__logo,
+    .page-pass__logo,
+    .page-name__logo {
+        margin-top: 40px;
+        margin-bottom: 20px;
+        width: 100px;
+        height: 100px;
+    }
+
+    .page-code__logo,
+    .page-pass__logo,
+    .page-pass__logo.page-pass__logo_peep {
+        background-size: 100px 100px;
+        background-position: top 0 center;
+    }
+
+    .page-pass__logo {
+        top: 4px;
+    }
+
+    .page-name__logo svg {
+        top: 26px;
+    }
+}
+
+@media all and (min-width: 321px) and (max-width: 799px) {
+    .page-phone__form label,
+    .page-code__form label,
+    .page-pass__form label,
+    .page-name__form label {
+        width: calc(100% - 34px);
+    }
+
+    .page-phone__logo,
+    .page-code__logo,
+    .page-pass__logo,
+    .page-name__logo {
+        margin-top: 40px;
+        margin-bottom: 20px;
+        width: 140px;
+        height: 140px;
+    }
+
+    .page-code__logo,
+    .page-pass__logo,
+    .page-pass__logo.page-pass__logo_peep {
+        background-size: 140px 140px;
+        background-position: top 0 center;
+    }
+
+    .page-name__logo svg {
+        top: 46px;
+    }
+}
+
+@media all and (max-height: 800px) and (min-width: 800px) {
+    .page-phone__logo,
+    .page-code__logo,
+    .page-pass__logo,
+    .page-name__logo {
+        margin-top: 68px;
+    }
 }

@@ -47,37 +47,63 @@
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     };
 
-    const CONSTRUCTOR = '_';
-    const CONSTRUCTOR_ONCE = '__';
-    const CONSTRUCTOR_ONCE_CALLED = '___';
-    const DESTRUCTOR = '____';
+    const prefetchImg = function(url) {
+        (new Image).src = url;
+    }
+
+    const setVisibility = function(cssSelector, isVisible) {
+        $(cssSelector).style.visibility = isVisible ? 'visible' : 'hidden';
+    }
+
+    const CONSTRUCTOR_ONCE = '_';
+    const CONSTRUCTOR_ONCE_CALLED = '__';
+    const CONSTRUCTOR = '____';
+    const DESTRUCTOR = '___';
 
     const CLASS__CACHE = '.cache';
     const CLASS__PAGE_PHONE = '.page-phone';
     const CLASS__PAGE_CODE = '.page-code';
+    const CLASS__PAGE_PASS = '.page-pass';
+    const CLASS__PAGE_NAME = '.page-name';
     const CLASS__PAGE_HOME = '.page-home';
     const CLASS__SINGLE_LINE_INPUT = '.single-line-input';
+    const CLASS__SINGLE_LINE_INPUT__ERROR = '.single-line-input__error';
     const CLASS__SINGLE_LINE_INPUT_PLACEHOLDER = '.single-line-input-placeholder';
+    const CLASS__BUTTON = '.button';
     const CLASS__BUTTON_BUSY = '.button-busy';
     const CLASS__ICON__TELEGRAM_LOGO = '.icon__telegram-logo';
     const CLASS__ICON__CHECKBOX_ON = '.icon__checkbox-on';
     const CLASS__ICON__CHECKBOX_OFF = '.icon__checkbox-off';
     const CLASS__ICON__DOWN = '.icon__down';
+    const CLASS__ICON__WAIT = '.icon__wait';
+    const CLASS__ICON__PENCIL = '.icon__pencil';
+    const CLASS__ICON__EYE_ON = '.icon__eye-on';
+    const CLASS__ICON__EYE_OFF = '.icon__eye-off';
+    const CLASS__ICON__CAMERA_ADD = '.icon__camera-add';
+
+    const MONKEY_PLAIN = 'm1.svg';
+    const MONKEY_PEEP = 'm2.svg';
+    const MONKEY_CLOSED = 'm3.svg';
+    const MONKEY_SIDE_LOOK = 'm4.svg';
 
     const ROUTE_PHONE = 'phone';
     const ROUTE_CODE = 'code';
+    const ROUTE_PASS = 'pwd';
+    const ROUTE_NAME = 'name';
     const ROUTE_HOME = 'home';
 
     const ROUTE_TO_PAGE_CLASS = {
         [ROUTE_PHONE]: CLASS__PAGE_PHONE,
         [ROUTE_CODE]: CLASS__PAGE_CODE,
+        [ROUTE_PASS]: CLASS__PAGE_PASS,
+        [ROUTE_NAME]: CLASS__PAGE_NAME,
         [ROUTE_HOME]: CLASS__PAGE_HOME,
     };
 
     const KEY_CODE_ENTER = 13;
     const CONTROL_KEY_CODES = [
         8, // backspace
-        KEY_CODE_ENTER,
+        9, // tab
         46, // delete
         35, // win end
         36, // win home
@@ -89,24 +115,34 @@
 
     const VALUES = {
         PAGE_PHONE: {
-            TITLE: {
-                DEFAULT: 'Sign in to Telegram',
-                ENTER_NAME: 'Your Name',
-                ENTER_PASSWORD: 'Enter a Password',
-            },
-            SUBTITLE: {
-                DEFAULT: 'Please confirm your country and<br>enter your phone number.',
-                SMS_SENT: 'We have sent you an SMS<br>with the code.',
-            },
-            COUNTRY_PLACEHOLDER: {
-                DEFAULT: 'Country',
-            },
-            PHONE_PLACEHOLDER: {
-                DEFAULT: 'Phone Number',
-            },
+            TITLE: 'Sign in to Telegram',
+            SUBTITLE: 'Please confirm your country and<br>enter your phone number',
+            COUNTRY_PLACEHOLDER: 'Country',
+            PHONE_PLACEHOLDER: 'Phone Number',
             KEEP_SIGNED: 'Keep me signed in',
             NEXT: 'Next',
+            WAIT: 'Please wait...',
         },
+        PAGE_CODE: {
+            SUBTITLE: 'We have sent you an SMS<br>with the code',
+            PLACEHOLDER: 'Code (12345)',
+            PLACEHOLDER_INVALID: 'Invalid Code',
+        },
+        PAGE_PASS: {
+            TITLE: 'Enter a Password',
+            SUBTITLE: 'Your account is protected with<br>an additional password',
+            PLACEHOLDER: 'Password (123)',
+            PLACEHOLDER_INVALID: 'Invalid Password',
+            NEXT: 'Next',
+            WAIT: 'Please wait...',
+        },
+        PAGE_NAME: {
+            TITLE: 'Your Name',
+            SUBTITLE: 'Enter your name and add<br>a profile picture',
+            PLACEHOLDER_FIRST_NAME: 'Name',
+            PLACEHOLDER_LAST_NAME: 'Last Name (optional)',
+            SUBMIT: 'Start messaging',
+        }
     };
 
     const COUNTRIES = [
@@ -371,7 +407,9 @@
     ];
 
     const user = (function() {
-        const user = {};
+        const user = {
+            phone: '',
+        };
 
         user.isGuest = function() {
             return true;
@@ -422,8 +460,271 @@
         return router;
     })();
 
-    router.pages[CLASS__PAGE_CODE] = (function() {
+    router.pages[CLASS__PAGE_HOME] = (function() {
         const page = {};
+
+        return page;
+    })();
+
+    router.pages[CLASS__PAGE_NAME] = (function() {
+        const CLASS__PAGE_NAME__LOGO = '.page-name__logo';
+        const CLASS__PAGE_NAME__TITLE = '.page-name__title';
+        const CLASS__PAGE_NAME__SUBTITLE = '.page-name__subtitle';
+        const CLASS__PAGE_NAME__FORM = '.page-name__form';
+        const CLASS__PAGE_NAME__FORM__FIRST_NAME = '.page-name__form__first-name';
+        const CLASS__PAGE_NAME__FORM__FIRST_NAME__INPUT = CLASS__PAGE_NAME__FORM__FIRST_NAME + ' ' + CLASS__SINGLE_LINE_INPUT;
+        const CLASS__PAGE_NAME__FORM__FIRST_NAME__INPUT_PLACEHOLDER = CLASS__PAGE_NAME__FORM__FIRST_NAME + ' ' + CLASS__SINGLE_LINE_INPUT_PLACEHOLDER;
+        const CLASS__PAGE_NAME__FORM__LAST_NAME = '.page-name__form__last-name';
+        const CLASS__PAGE_NAME__FORM__LAST_NAME__INPUT = CLASS__PAGE_NAME__FORM__LAST_NAME + ' ' + CLASS__SINGLE_LINE_INPUT;
+        const CLASS__PAGE_NAME__FORM__LAST_NAME__INPUT_PLACEHOLDER = CLASS__PAGE_NAME__FORM__LAST_NAME + ' ' + CLASS__SINGLE_LINE_INPUT_PLACEHOLDER;
+        const CLASS__PAGE_NAME__FORM__SUBMIT = '.page-name__form__submit';
+        const CLASS__PAGE_NAME__FORM__SUBMIT__BUTTON = CLASS__PAGE_NAME__FORM__SUBMIT + ' ' + CLASS__BUTTON;
+        const CLASS__PAGE_NAME__FORM__SUBMIT__BUTTON__TEXT = '.page-name__form__submit__text';
+
+        const page = {
+            submitting: false,
+        };
+
+        page.onSubmit = function(event) {
+            const firstName = $(CLASS__PAGE_NAME__FORM__FIRST_NAME__INPUT).value.trim();
+            const lastName = $(CLASS__PAGE_NAME__FORM__LAST_NAME__INPUT).value.trim();
+
+            if (!firstName.length) return;
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (page.submitting) return;
+            page.submitting = true;
+
+
+            router.goto(ROUTE_HOME);
+        };
+
+        page[CONSTRUCTOR_ONCE] = function() {
+            push(CLASS__PAGE_NAME__LOGO, dup(CLASS__ICON__CAMERA_ADD));
+            on(CLASS__PAGE_NAME__FORM, 'submit', page.onSubmit);
+            on(CLASS__PAGE_NAME__FORM__SUBMIT__BUTTON, 'click', page.onSubmit);
+            on(CLASS__PAGE_NAME__LOGO, 'click', function(event) { alert('TODO'); });
+        };
+
+        page[CONSTRUCTOR] = function() {
+            html(CLASS__PAGE_NAME__TITLE, VALUES.PAGE_NAME.TITLE);
+            html(CLASS__PAGE_NAME__SUBTITLE, VALUES.PAGE_NAME.SUBTITLE);
+            $(CLASS__PAGE_NAME__FORM__FIRST_NAME__INPUT).placeholder
+                = $(CLASS__PAGE_NAME__FORM__FIRST_NAME__INPUT_PLACEHOLDER).innerText
+                = VALUES.PAGE_NAME.PLACEHOLDER_FIRST_NAME;
+            $(CLASS__PAGE_NAME__FORM__LAST_NAME__INPUT).placeholder
+                = $(CLASS__PAGE_NAME__FORM__LAST_NAME__INPUT_PLACEHOLDER).innerText
+                = VALUES.PAGE_NAME.PLACEHOLDER_LAST_NAME;
+            $(CLASS__PAGE_NAME__FORM__FIRST_NAME__INPUT).value = '';
+            $(CLASS__PAGE_NAME__FORM__LAST_NAME__INPUT).value = '';
+            $(CLASS__PAGE_NAME__FORM__FIRST_NAME__INPUT).focus();
+            $(CLASS__PAGE_NAME__FORM__SUBMIT__BUTTON__TEXT).innerText = VALUES.PAGE_NAME.SUBMIT;
+            page.submitting = false;
+        };
+
+        return page;
+    })();
+
+    router.pages[CLASS__PAGE_PASS] = (function() {
+        const CLASS__PAGE_PASS__LOGO = '.page-pass__logo';
+        const CLASS__PAGE_PASS__LOGO_PEEP = '.page-pass__logo_peep';
+        const CLASS__PAGE_PASS__TITLE = '.page-pass__title';
+        const CLASS__PAGE_PASS__SUBTITLE = '.page-pass__subtitle';
+        const CLASS__PAGE_PASS__FORM = '.page-pass__form';
+        const CLASS__PAGE_PASS__FORM__PASS = '.page-pass__form__pass';
+        const CLASS__PAGE_PASS__FORM__PASS__INPUT = CLASS__PAGE_PASS__FORM__PASS + ' ' + CLASS__SINGLE_LINE_INPUT;
+        const CLASS__PAGE_PASS__FORM__PASS__INPUT_PLACEHOLDER = CLASS__PAGE_PASS__FORM__PASS + ' ' + CLASS__SINGLE_LINE_INPUT_PLACEHOLDER;
+        const CLASS__PAGE_PASS__FORM__SUBMIT = '.page-pass__form__submit';
+        const CLASS__PAGE_PASS__FORM__SUBMIT__BUTTON = CLASS__PAGE_PASS__FORM__SUBMIT + ' ' + CLASS__BUTTON;
+        const CLASS__PAGE_PASS__FORM__SUBMIT__BUTTON__TEXT = '.page-pass__form__submit__text';
+
+        const page = {
+            submitting: false,
+            failedPass: false,
+        };
+
+        page.onSubmit = function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (page.submitting) return;
+            page.submitting = true;
+
+            const pass = $(CLASS__PAGE_PASS__FORM__PASS__INPUT).value;
+
+            if (pass !== '123') {
+                page.failedPass = pass;
+                page.submitErrored();
+                $(CLASS__PAGE_PASS__FORM__PASS__INPUT).focus();
+            } else {
+                router.goto(ROUTE_NAME);
+            }
+        };
+
+        page.submitErrored = function() {
+            $(CLASS__PAGE_PASS__FORM__PASS__INPUT).classList.add(CLASS__SINGLE_LINE_INPUT__ERROR.substr(1));
+            $(CLASS__PAGE_PASS__FORM__PASS__INPUT_PLACEHOLDER).innerText = VALUES.PAGE_PASS.PLACEHOLDER_INVALID;
+            page.submitting = false;
+        };
+
+        page.onInput = function(event) {
+            const pass = event.target.value;
+
+            if (page.failedPass && pass !== page.failedPass) {
+                page.resetError();
+            }
+        };
+
+        page.resetError = function() {
+            $(CLASS__PAGE_PASS__FORM__PASS__INPUT).classList.remove(CLASS__SINGLE_LINE_INPUT__ERROR.substr(1));
+            $(CLASS__PAGE_PASS__FORM__PASS__INPUT_PLACEHOLDER).innerText = VALUES.PAGE_PASS.PLACEHOLDER;
+            page.failedPass = false;
+        };
+
+        page.showPass = function() {
+            hide(page.eyeOn);
+            show(page.eyeOff);
+            $(CLASS__PAGE_PASS__LOGO).classList.add(CLASS__PAGE_PASS__LOGO_PEEP.substr(1));
+            $(CLASS__PAGE_PASS__FORM__PASS__INPUT).type = 'text';
+        };
+
+        page.hidePass = function() {
+            show(page.eyeOn);
+            hide(page.eyeOff);
+            $(CLASS__PAGE_PASS__LOGO).classList.remove(CLASS__PAGE_PASS__LOGO_PEEP.substr(1));
+            $(CLASS__PAGE_PASS__FORM__PASS__INPUT).type = 'password';
+        };
+
+        page[CONSTRUCTOR_ONCE] = function() {
+            prefetchImg(MONKEY_PEEP);
+
+            on(CLASS__PAGE_PASS__FORM__PASS__INPUT, 'keyup keydown keypress change', page.onInput);
+            on(CLASS__PAGE_PASS__FORM, 'submit', page.onSubmit);
+            push(CLASS__PAGE_PASS__FORM__PASS, dup(CLASS__ICON__EYE_ON));
+            push(CLASS__PAGE_PASS__FORM__PASS, dup(CLASS__ICON__EYE_OFF));
+
+            page.eyeOn = $(CLASS__PAGE_PASS__FORM__PASS).querySelector(CLASS__ICON__EYE_ON);
+            page.eyeOff = $(CLASS__PAGE_PASS__FORM__PASS).querySelector(CLASS__ICON__EYE_OFF);
+
+            on(page.eyeOn, 'click', page.showPass);
+            on(page.eyeOff, 'click', page.hidePass);
+        };
+
+        page[CONSTRUCTOR] = function() {
+            html(CLASS__PAGE_PASS__TITLE, VALUES.PAGE_PASS.TITLE);
+            html(CLASS__PAGE_PASS__SUBTITLE, VALUES.PAGE_PASS.SUBTITLE);
+            $(CLASS__PAGE_PASS__FORM__PASS__INPUT).placeholder
+                = $(CLASS__PAGE_PASS__FORM__PASS__INPUT_PLACEHOLDER).innerText
+                = VALUES.PAGE_PASS.PLACEHOLDER;
+            $(CLASS__PAGE_PASS__FORM__PASS__INPUT).value = '';
+            $(CLASS__PAGE_PASS__FORM__PASS__INPUT).focus();
+            $(CLASS__PAGE_PASS__FORM__SUBMIT__BUTTON__TEXT).innerText = VALUES.PAGE_PASS.NEXT;
+            page.resetError();
+            page.submitting = false;
+            page.hidePass();
+        };
+
+        return page;
+    })();
+
+    router.pages[CLASS__PAGE_CODE] = (function() {
+        const CLASS__PAGE_CODE__LOGO = '.page-code__logo';
+        const CLASS__PAGE_CODE__LOGO_ERROR = '.page-code__logo_error';
+        const CLASS__PAGE_CODE__TITLE = '.page-code__title';
+        const CLASS__PAGE_CODE__SUBTITLE = '.page-code__subtitle';
+        const CLASS__PAGE_CODE__FORM = '.page-code__form';
+        const CLASS__PAGE_CODE__FORM__CODE = '.page-code__form__code';
+        const CLASS__PAGE_CODE__FORM__CODE__INPUT = CLASS__PAGE_CODE__FORM__CODE + ' ' + CLASS__SINGLE_LINE_INPUT;
+        const CLASS__PAGE_CODE__FORM__CODE__INPUT_PLACEHOLDER = CLASS__PAGE_CODE__FORM__CODE + ' ' + CLASS__SINGLE_LINE_INPUT_PLACEHOLDER;
+
+        const page = {
+            code: null,
+            submitting: false,
+        };
+        const code = {};
+
+        code.onInput = function(event) {
+            if (event.keyCode === KEY_CODE_ENTER) return;
+            if (CONTROL_KEY_CODES.includes(event.keyCode)) return;
+            if (event.altKey || event.ctrlKey || event.metaKey) return;
+            if (!event.key.match(/[0-9]/)) { // block all other non-num
+                event.preventDefault();
+            }
+        };
+
+        code.onInputCheck = function(event) {
+            const codeRaw = event.target.value;
+            const codeValidated = codeRaw.replace(/[^0-9]/g, '');
+
+            if (codeValidated !== codeRaw && codeRaw.length) {
+                event.target.value = codeValidated;
+            }
+
+            if (codeValidated.length >= 5) {
+                code.submit(codeValidated);
+            } else {
+                code.submitReset();
+            }
+        };
+
+        code.submit = function(inputCode) {
+            if (page.submitting) return;
+            page.submitting = true;
+
+            page.code = parseInt(inputCode);
+
+            if (page.code !== 12345) {
+                code.submitErrored();
+            } else {
+                router.goto(ROUTE_PASS);
+            }
+        };
+
+        code.submitErrored = function() {
+            $(CLASS__PAGE_CODE__FORM__CODE__INPUT).classList.add(CLASS__SINGLE_LINE_INPUT__ERROR.substr(1));
+            $(CLASS__PAGE_CODE__FORM__CODE__INPUT_PLACEHOLDER).innerText = VALUES.PAGE_CODE.PLACEHOLDER_INVALID;
+            $(CLASS__PAGE_CODE__LOGO).classList.add(CLASS__PAGE_CODE__LOGO_ERROR.substr(1));
+            page.submitting = false;
+        };
+
+        code.submitReset = function() {
+            $(CLASS__PAGE_CODE__FORM__CODE__INPUT).classList.remove(CLASS__SINGLE_LINE_INPUT__ERROR.substr(1));
+            $(CLASS__PAGE_CODE__FORM__CODE__INPUT_PLACEHOLDER).innerText = VALUES.PAGE_CODE.PLACEHOLDER;
+            $(CLASS__PAGE_CODE__LOGO).classList.remove(CLASS__PAGE_CODE__LOGO_ERROR.substr(1));
+            page.submitting = false;
+        };
+
+        page[CONSTRUCTOR_ONCE] = function() {
+            on(CLASS__PAGE_CODE__TITLE, 'click', () => {
+                router.goto(ROUTE_PHONE);
+            });
+
+            prefetchImg(MONKEY_SIDE_LOOK);
+            prefetchImg(MONKEY_CLOSED);
+
+            on(CLASS__PAGE_CODE__FORM__CODE__INPUT, 'keyup keydown keypress',  code.onInput);
+            on(CLASS__PAGE_CODE__FORM__CODE__INPUT, 'keyup change blur', code.onInputCheck);
+            on(CLASS__PAGE_CODE__FORM, 'submit', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+            });
+        };
+
+        page[CONSTRUCTOR] = function() {
+            html(CLASS__PAGE_CODE__TITLE, user.phone);
+            push(CLASS__PAGE_CODE__TITLE, dup(CLASS__ICON__PENCIL));
+            html(CLASS__PAGE_CODE__SUBTITLE, VALUES.PAGE_CODE.SUBTITLE);
+            $(CLASS__PAGE_CODE__FORM__CODE__INPUT).placeholder
+                = $(CLASS__PAGE_CODE__FORM__CODE__INPUT_PLACEHOLDER).innerText
+                = VALUES.PAGE_CODE.PLACEHOLDER;
+
+            code.submitReset();
+
+            $(CLASS__PAGE_CODE__FORM__CODE__INPUT).value = '';
+            $(CLASS__PAGE_CODE__FORM__CODE__INPUT).focus();
+        };
 
         return page;
     })();
@@ -446,11 +747,13 @@
         const CLASS__PAGE_PHONE__FORM__PHONE__INPUT_PLACEHOLDER = CLASS__PAGE_PHONE__FORM__PHONE + ' ' + CLASS__SINGLE_LINE_INPUT_PLACEHOLDER;
         const CLASS__PAGE_PHONE__FORM__KEEP_SIGNED = '.page-phone__form__keep-signed';
         const CLASS__PAGE_PHONE__FORM__KEEP_SIGNED__TEXT = '.page-phone__form__keep-signed__text';
-        const CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT = '.page-phone__form__phone-submit';
-        const CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT__BUTTON = CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT + ' button';
+        const CLASS__PAGE_PHONE__FORM__SUBMIT = '.page-phone__form__submit';
+        const CLASS__PAGE_PHONE__FORM__SUBMIT__BUTTON = CLASS__PAGE_PHONE__FORM__SUBMIT + ' ' + CLASS__BUTTON;
+        const CLASS__PAGE_PHONE__FORM__SUBMIT__BUTTON__TEXT = '.page-phone__form__submit__text';
 
         const page = {
             submitting: false,
+            phoneValid: false,
         };
         const phone = {};
         const countries = {
@@ -484,9 +787,11 @@
             }
 
             if (phoneValidated.length > 1 && phoneValidated.trim() !== countries.selectedCode) {
-                show(CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT);
+                setVisibility(CLASS__PAGE_PHONE__FORM__SUBMIT, true);
+                page.phoneValid = true;
             } else {
-                hide(CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT);
+                setVisibility(CLASS__PAGE_PHONE__FORM__SUBMIT, false);
+                page.phoneValid = false;
             }
         };
 
@@ -519,6 +824,7 @@
 
         countries.onInput = function(event) {
             const inputValue = normalizeStr(event.target.value).trim();
+            let lastRow = null;
 
             countries.rowsVisible = 0;
 
@@ -526,12 +832,17 @@
                 if (!inputValue.length || countryRow.dataset.title.indexOf(inputValue) === 0) {
                     show(countryRow, 'flex');
                     countries.rowsVisible++;
+                    lastRow = countryRow;
                 } else {
                     hide(countryRow);
                 }
             });
 
             countries.rowsVisible && countries.show() || countries.hide();
+
+            if (event.keyCode === KEY_CODE_ENTER && countries.rowsVisible === 1) {
+                countries.activateRow(lastRow);
+            }
         };
 
         countries.onClick = function(event) {
@@ -541,39 +852,46 @@
 
             const row = event.target.closest(CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT__ROW);
 
-            if (row) {
-                const countryName = row.querySelector(CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT__ROW__TITLE).innerText;
-                const phoneCode = row.querySelector(CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT__ROW__PHONE_CODE).innerText;
+            row && countries.activateRow(row);
+        };
 
-                const currentInputValue = $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).value;
+        countries.activateRow = function(row) {
+            const countryName = row.querySelector(CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT__ROW__TITLE).innerText;
+            const phoneCode = row.querySelector(CLASS__PAGE_PHONE__FORM__COUNTRY_SELECT__ROW__PHONE_CODE).innerText;
 
-                const backupedUserInput = countries.selectedCode
-                    && currentInputValue.indexOf(countries.selectedCode) === 0
-                    && currentInputValue.substr(countries.selectedCode.length + 1);
+            const currentInputValue = $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).value;
 
-                $(CLASS__PAGE_PHONE__FORM__COUNTRY__INPUT).value = countryName;
-                $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).value = phoneCode + ' ' + (backupedUserInput || '');
+            const backupedUserInput = countries.selectedCode
+                && currentInputValue.indexOf(countries.selectedCode) === 0
+                && currentInputValue.substr(countries.selectedCode.length + 1);
 
-                countries.selectedCode = phoneCode;
-                countries.hide();
+            $(CLASS__PAGE_PHONE__FORM__COUNTRY__INPUT).value = countryName;
+            $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).value = phoneCode + ' ' + (backupedUserInput || '');
 
-                setTimeout(() => {
-                    $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).focus();
-                }, 0);
-            }
+            countries.selectedCode = phoneCode;
+            countries.hide();
+
+            setTimeout(() => {
+                $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).focus();
+            }, 0);
         };
 
         page.onSubmit = function(event) {
-            if (page.submitting) return;
-            page.submitting = true;
+            user.phone = $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).value.trim();
+
+            if (!user.phone.length) return;
 
             event.preventDefault();
             event.stopPropagation();
 
-            const phone = $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).value;
-            console.log('phone:', phone);
+            if (!page.phoneValid) return;
+            if (page.submitting) return;
+            page.submitting = true;
 
-            $(CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT__BUTTON).classList.add(CLASS__BUTTON_BUSY);
+            $(CLASS__PAGE_PHONE__FORM__SUBMIT__BUTTON).classList.add(CLASS__BUTTON_BUSY.substr(1));
+            $(CLASS__PAGE_PHONE__FORM__SUBMIT__BUTTON__TEXT).innerText = VALUES.PAGE_PHONE.WAIT;
+
+            prefetchImg(MONKEY_PLAIN);
 
             setTimeout(() => {
                 router.goto(ROUTE_CODE);
@@ -582,25 +900,16 @@
 
         page.submitEnd = function() {
             page.submitting = false;
-            $(CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT__BUTTON).classList.remove(CLASS__BUTTON_BUSY);
+            $(CLASS__PAGE_PHONE__FORM__SUBMIT__BUTTON).classList.remove(CLASS__BUTTON_BUSY.substr(1));
+            $(CLASS__PAGE_PHONE__FORM__SUBMIT__BUTTON__TEXT).innerText = VALUES.PAGE_PHONE.NEXT;
         };
 
         page[CONSTRUCTOR_ONCE] = function() {
-            html(CLASS__PAGE_PHONE__TITLE, VALUES.PAGE_PHONE.TITLE.DEFAULT);
-            html(CLASS__PAGE_PHONE__SUBTITLE, VALUES.PAGE_PHONE.SUBTITLE.DEFAULT);
-            $(CLASS__PAGE_PHONE__FORM__COUNTRY__INPUT).placeholder
-                = $(CLASS__PAGE_PHONE__FORM__COUNTRY__INPUT_PLACEHOLDER).innerText
-                = VALUES.PAGE_PHONE.COUNTRY_PLACEHOLDER.DEFAULT;
-            $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).placeholder
-                = $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT_PLACEHOLDER).innerText
-                = VALUES.PAGE_PHONE.PHONE_PLACEHOLDER.DEFAULT;
-            $(CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT__BUTTON).innerText = VALUES.PAGE_PHONE.NEXT;
-            html(CLASS__PAGE_PHONE__FORM__KEEP_SIGNED__TEXT, VALUES.PAGE_PHONE.KEEP_SIGNED);
-
             push(CLASS__PAGE_PHONE__LOGO, dup(CLASS__ICON__TELEGRAM_LOGO));
             push(CLASS__PAGE_PHONE__FORM__KEEP_SIGNED, dup(CLASS__ICON__CHECKBOX_ON));
             push(CLASS__PAGE_PHONE__FORM__KEEP_SIGNED, dup(CLASS__ICON__CHECKBOX_OFF));
             push(CLASS__PAGE_PHONE__FORM__COUNTRY, dup(CLASS__ICON__DOWN));
+            push(CLASS__PAGE_PHONE__FORM__SUBMIT__BUTTON, dup(CLASS__ICON__WAIT));
 
             countries.init();
 
@@ -608,24 +917,31 @@
             on(CLASS__PAGE_PHONE__FORM__COUNTRY__INPUT, 'keyup keypress focus', countries.onInput);
             on(CLASS__PAGE_PHONE__FORM__PHONE__INPUT, 'keyup keydown keypress', phone.onInput);
             on(CLASS__PAGE_PHONE__FORM__PHONE__INPUT, 'keyup change blur', phone.onInputCheck);
-            on(CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT__BUTTON, 'click', page.onSubmit);
             on(CLASS__PAGE_PHONE__FORM, 'submit', page.onSubmit);
-        }
+            on(CLASS__PAGE_PHONE__FORM__SUBMIT__BUTTON, 'click', page.onSubmit);
+        };
 
         page[CONSTRUCTOR] = function() {
+            html(CLASS__PAGE_PHONE__TITLE, VALUES.PAGE_PHONE.TITLE);
+            html(CLASS__PAGE_PHONE__SUBTITLE, VALUES.PAGE_PHONE.SUBTITLE);
+            $(CLASS__PAGE_PHONE__FORM__COUNTRY__INPUT).placeholder
+                = $(CLASS__PAGE_PHONE__FORM__COUNTRY__INPUT_PLACEHOLDER).innerText
+                = VALUES.PAGE_PHONE.COUNTRY_PLACEHOLDER;
+            $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).placeholder
+                = $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT_PLACEHOLDER).innerText
+                = VALUES.PAGE_PHONE.PHONE_PLACEHOLDER;
+            html(CLASS__PAGE_PHONE__FORM__KEEP_SIGNED__TEXT, VALUES.PAGE_PHONE.KEEP_SIGNED);
+
+            countries.hide();
+            page.submitEnd();
+
+            $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).focus();
+
             on('body', 'mousedown', countries.onClick);
         };
 
         page[DESTRUCTOR] = function() {
             un('body', 'mousedown', countries.onClick);
-
-            page.submitEnd();
-            countries.hide();
-
-            $(CLASS__PAGE_PHONE__FORM__PHONE__INPUT).value = '';
-            $(CLASS__PAGE_PHONE__FORM__COUNTRY__INPUT).value = '';
-
-            hide(CLASS__PAGE_PHONE__FORM__PHONE_SUBMIT);
         };
 
         return page;
@@ -634,6 +950,6 @@
     on(_window, 'hashchange', router.onHash);
 
     on(_window, 'DOMContentLoaded', function() {
-        router.goto(user.isGuest() ? ROUTE_PHONE : ROUTE_HOME);
+       router.goto(user.isGuest() ? ROUTE_PHONE : ROUTE_HOME);
     });
 })(window, document, location);
