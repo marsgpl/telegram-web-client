@@ -434,6 +434,16 @@
             });
         };
 
+        tg.provideCode = function(phone, code, phoneCodeHash) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve({
+                        //......
+                    });
+                }, 1000);
+            });
+        };
+
         return tg;
     })();
 
@@ -493,6 +503,9 @@
 
     router.pages[CLASS__PAGE_NAME] = (function() {
         const CLASS__PAGE_NAME__LOGO = '.page-name__logo';
+        const CLASS__PAGE_NAME__LOGO_ACTIVE = '.page-name__logo-active';
+        const CLASS__PAGE_NAME__LOGO_WITH_AVA = '.page-name__logo-with-ava';
+        const CLASS__PAGE_NAME__LOGO__AVA_INPUT = '.page-name__logo__ava-input';
         const CLASS__PAGE_NAME__TITLE = '.page-name__title';
         const CLASS__PAGE_NAME__SUBTITLE = '.page-name__subtitle';
         const CLASS__PAGE_NAME__FORM = '.page-name__form';
@@ -508,6 +521,7 @@
 
         const page = {
             submitting: false,
+            ava: {},
         };
 
         page.onSubmit = function(event) {
@@ -522,15 +536,63 @@
             if (page.submitting) return;
             page.submitting = true;
 
-
             router.goto(ROUTE_HOME);
+        };
+
+        page.ava.disableDefault = function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+        };
+
+        page.ava.activate = function() {
+            page.ava.clear();
+            $(CLASS__PAGE_NAME__LOGO).classList.add(CLASS__PAGE_NAME__LOGO_ACTIVE.substr(1));
+        };
+
+        page.ava.deactivate = function() {
+            $(CLASS__PAGE_NAME__LOGO).classList.remove(CLASS__PAGE_NAME__LOGO_ACTIVE.substr(1));
+        };
+
+        page.ava.clear = function() {
+            if (page.ava.img) {
+                $(CLASS__PAGE_NAME__LOGO).removeChild(page.ava.img);
+                page.ava.img = null;
+                $(CLASS__PAGE_NAME__LOGO).classList.remove(CLASS__PAGE_NAME__LOGO_WITH_AVA.substr(1));
+            }
+        };
+
+        page.ava.onDrop = function(event) {
+            page.ava.clear();
+            page.ava.handleFiles(event.dataTransfer.files);
+        };
+
+        page.ava.onSelect = function(event) {
+            page.ava.clear();
+            page.ava.handleFiles(this.files);
+        };
+
+        page.ava.handleFiles = function(files) {
+            page.ava.file = files[0];
+
+            const reader = new FileReader;
+            reader.readAsDataURL(page.ava.file);
+            reader.onloadend = function() {
+                page.ava.img = document.createElement('img');
+                page.ava.img.src = reader.result;
+                push(CLASS__PAGE_NAME__LOGO, page.ava.img);
+                $(CLASS__PAGE_NAME__LOGO).classList.add(CLASS__PAGE_NAME__LOGO_WITH_AVA.substr(1));
+            };
         };
 
         page[CONSTRUCTOR_ONCE] = function() {
             push(CLASS__PAGE_NAME__LOGO, dup(CLASS__ICON__CAMERA_ADD));
             on(CLASS__PAGE_NAME__FORM, 'submit', page.onSubmit);
             on(CLASS__PAGE_NAME__FORM__SUBMIT__BUTTON, 'click', page.onSubmit);
-            on(CLASS__PAGE_NAME__LOGO, 'click', function(event) { alert('TODO'); });
+            on(CLASS__PAGE_NAME__LOGO, 'dragenter dragover dragleave drop', page.ava.disableDefault);
+            on(CLASS__PAGE_NAME__LOGO, 'dragenter', page.ava.activate);
+            on(CLASS__PAGE_NAME__LOGO, 'dragleave drop', page.ava.deactivate);
+            on(CLASS__PAGE_NAME__LOGO, 'drop', page.ava.onDrop);
+            on(CLASS__PAGE_NAME__LOGO__AVA_INPUT, 'change', page.ava.onSelect);
         };
 
         page[CONSTRUCTOR] = function() {

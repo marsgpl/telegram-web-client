@@ -29,6 +29,49 @@ input, button, select, textarea {
     display: none;
 }
 
+.page-name__logo {
+    overflow: hidden;
+    display: block;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.page-name__logo__ava-input {
+    visibility: hidden;
+    position: absolute;
+}
+
+.page-name__logo img {
+    opacity: .7;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+}
+
+.page-name__logo.page-name__logo-active::before {
+    content: ' ';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 5px dashed #fff;
+    box-sizing: border-box;
+    z-index: 3;
+}
+
+.page-name__logo.page-name__logo-with-ava {
+    background: #000;
+}
+
+.page-name__logo.page-name__logo-with-ava:hover {
+    background: #222;
+}
+
 /* use i as blocks because it is shorter than div */
 i {
     display: block;
@@ -82,14 +125,6 @@ i {
     margin: 68px auto 32px;
 }
 
-.page-phone__logo::before,
-.page-code__logo::before,
-.page-pass__logo::before,
-.page-name__logo::before {
-    display: block;
-    content: ' ';
-}
-
 .page-name__logo {
     background: #4EA4F6;
     border-radius: 50%;
@@ -107,6 +142,7 @@ i {
     top: 56px;
     left: 3px;
     position: relative;
+    z-index: 2;
 }
 
 .page-code__logo {
